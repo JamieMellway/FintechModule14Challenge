@@ -1,107 +1,82 @@
-# Machine Learning Trading Bot
+# Machine Learning Trading Bot Evaluation Report
 
 ![Decorative image.](Images/14-challenge-image.png)
 
-Now, it's time to take what you've learned about machine learning and apply it to new situations. For this optional assignment, you'll create an algorithmic trading bot that learns and adapts to new data and evolving markets. Be sure to give it your all -- as the skills you hone will become powerful tools in your FinTech tool belt.
-
-## Background
-
-In this Challenge, you’ll assume the role of a financial advisor at one of the top five financial advisory firms in the world. Your firm constantly competes with the other major firms to manage and automatically trade assets in a highly dynamic environment. In recent years, your firm has heavily profited by using computer algorithms that can buy and sell faster than human traders.
-
-The speed of these transactions gave your firm a competitive advantage early on. But, people still need to specifically program these systems, which limits their ability to adapt to new data. You’re thus planning to improve the existing algorithmic trading systems and maintain the firm’s competitive advantage in the market. To do so, you’ll enhance the existing trading signals with machine learning algorithms that can adapt to new data.
-
-## What You're Creating
-
-You’ll combine your new algorithmic trading skills with your existing skills in financial Python programming and machine learning to create an algorithmic trading bot that learns and adapts to new data and evolving markets.
-
-In a Jupyter notebook, you’ll do the following:
-
-* Implement an algorithmic trading strategy that uses machine learning to automate the trade decisions.
-
-* Adjust the input parameters to optimise the trading algorithm.
-
-* Train a new machine learning model and compare its performance to that of a baseline model.
-
-As part of your GitHub repository’s `README.md` file, you will also create a report that compares the performance of the machine learning models based on the trading predictions that each makes and the resulting cumulative strategy returns.
-
-## Files
-
-Download the following files to help you get started:
-
-[Unit 14 homework files](Starter_Code/Starter_Code.zip)
-
-> **Note:** The provided CSV file contains OHLCV data for an MSCI&ndash;based emerging markets ETF that [iShares](https://www.ishares.com/us/products/268704/ishares-currency-hedged-msci-emerging-markets) issued. Investments in emerging markets make up an important aspect of a well-diversified investment portfolio. This is because the included equities have potentially higher long-term returns, even though they carry more risk.
-
-## Instructions
-
-Use the starter code file to complete the steps that the instructions outline. The steps for this Challenge are divided into the following sections:
-
-* Establish a Baseline Performance
-
-* Tune the Baseline Trading Algorithm
-
-* Evaluate a New Machine Learning Classifier
-
-* Create an Evaluation Report
-
 ### Establish a Baseline Performance
 
-In this section, you’ll run the provided starter code to establish a baseline performance for the trading algorithm. To do so, complete the following steps.
+We set up SKLearn's support vector machine (SVM) learning method using the SVC classifier model to test and train our data.  
 
-Open the Jupyter notebook. Restart the kernel, run the provided cells that correspond with the first three steps, and then proceed to step four.
+For our training and testing inputs (X) we use simple moving averages (SMA) of 4 and 100 days.  For our training and testing outputs we use a buy signal when actual daily returns are positive and sell signal when they are negative.  Our training data is three months and our testing data is around 5.5 years. 
 
-1. Import the OHLCV dataset into a Pandas DataFrame.
+We are using a rather simple inputs and output signal with a small training window, so we are not predicting great results.
 
-2. Generate trading signals using short- and long-window SMA values.
+Our classification report gives us:
+* Accuracy is 0.52.  
+* Sell Precision 0.45
+* Sell Recall 0.39
+* Buy Precision 0.56
+* Buy Recall 0.62
 
-3. Split the data into training and testing datasets.
+The accuracy is around a half, so it is basically flipping a coin.  These two approachs SMA and SVM are not predicting the same thing at all.
 
-4. Use the `SVC` classifier model from SKLearn's support vector machine (SVM) learning method to fit the training data and make predictions based on the testing data. Review the predictions.
+Plotting the Actual Returns versus the Strategy Returns we see a similiar patterns with the Strategy Returns doing better than the actual returns.
 
-5. Review the classification report associated with the `SVC` model predictions.
+![SVM Results.](Resources/ActualReturnsVersusStrategyReturns_baseline.png)
 
-6. Create a predictions DataFrame that contains columns for “Predicted” values, “Actual Returns”, and “Strategy Returns”.
+For most of the time the SVM approach did better than the actual returns and did much better than the SMA approach.
 
-7. Create a cumulative return plot that shows the actual returns vs. the strategy returns. Save a PNG image of this plot. This will serve as a baseline against which to compare the effects of tuning the trading algorithm.
+### Tune the Baseline Trading Algorithm - Increase Training
 
-8. Write your conclusions about the performance of the baseline trading algorithm in the `README.md` file that’s associated with your GitHub repository. Support your findings by using the PNG image that you saved in the previous step.
+Next we will tune the results by increasing the training period from 3 months to 36 months.
 
-### Tune the Baseline Trading Algorithm
+Our classification report gives us:
+* Accuracy is 0.52.  
+* Sell Precision 0.44
+* Sell Recall 0.23
+* Buy Precision 0.55
+* Buy Recall 0.76
 
-In this section, you’ll tune, or adjust, the model’s input features to find the parameters that result in the best trading outcomes. (You’ll choose the best by comparing the cumulative products of the strategy returns.) To do so, complete the following steps:
+This is similar to the 3 month training results.  The accuracy is around a half, so it is basically flipping a coin.  These two approachs SMA and SVM are not predicting the same thing at all.
 
-1. Tune the training algorithm by adjusting the size of the training dataset. To do so, slice your data into different periods. Rerun the notebook with the updated parameters, and record the results in your `README.md` file. Answer the following question: What impact resulted from increasing or decreasing the training window?
+![SVM Results.](Resources/ActualReturnsVersusStrategyReturns_36Months.png)
 
-    > **Hint** To adjust the size of the training dataset, you can use a different `DateOffset` value&mdash;for example, six months. Be aware that changing the size of the training dataset also affects the size of the testing dataset.
+Here the SVM approach with 36 months did worse than it did with 3 months training.
 
-2. Tune the trading algorithm by adjusting the SMA input features. Adjust one or both of the windows for the algorithm. Rerun the notebook with the updated parameters, and record the results in your `README.md` file. Answer the following question: What impact resulted from increasing or decreasing either or both of the SMA windows?
+### Tune the Baseline Trading Algorithm - Increase Fast Window
 
-3. Choose the set of parameters that best improved the trading algorithm returns. Save a PNG image of the cumulative product of the actual returns vs. the strategy returns, and document your conclusion in your `README.md` file.
+Our next tuning is increasing our fast rolling average from 4 days to 50 days.
+
+Our classification report gives us:
+* Accuracy is 0.49.  
+* Sell Precision 0.44
+* Sell Recall 0.57
+* Buy Precision 0.55
+* Buy Recall 0.42
+
+This is slightly worse than the 4 day rolling fast window.  The accuracy is around a half, so it is basically flipping a coin.  These two approachs SMA and SVM are not predicting the same thing at all.
+
+![SVM Results.](Resources/ActualReturnsVersusStrategyReturns_50Day.png)
+
+This is the worse performing SVM approach so far.  It even performs worse that the SMA approach.
 
 ### Evaluate a New Machine Learning Classifier
 
-In this section, you’ll use the original parameters that the starter code provided. But, you’ll apply them to the performance of a second machine learning model. To do so, complete the following steps:
+Our next model resets the parameters back to first model (3 months training and 4 day fast rolling window), but now instead of using the SVM we will be using the Logistic Regression model.
 
-1. Import a new classifier, such as `AdaBoost`, `DecisionTreeClassifier`, or `LogisticRegression`. (For the full list of classifiers, refer to the [Supervised learning page](https://scikit-learn.org/stable/supervised_learning.html) in the scikit-learn documentation.)
+Our classification report is: 
+* Accuracy is 0.52.  
+* Sell Precision 0.44
+* Sell Recall 0.33
+* Buy Precision 0.56
+* Buy Recall 0.66
 
-2. Using the original training data as the baseline model, fit another model with the new classifier.
+Again, the accuracy is around a half, so it is basically flipping a coin.  These two approachs SMA and Logistic Regression models are not predicting the same thing at all.
 
-3. Backtest the new model to evaluate its performance. Save a PNG image of the cumulative product of the actual returns vs. the strategy returns for this updated trading algorithm, and write your conclusions in your `README.md` file. Answer the following questions: Did this new model perform better or worse than the provided baseline model? Did this new model perform better or worse than your tuned trading algorithm?
+![SVM Results.](Resources/ActualReturnsVersusStrategyReturns_LogisticRegression.png)
 
-### Create an Evaluation Report
+Here for most of the time it is performing better than the actual returns, but it falls below it right at the end.  It was doing well and even starting to be better than the SVM approach until Covid hit where it fell.
 
-In the previous sections, you updated your `README.md` file with your conclusions. To accomplish this section, you need to add a summary evaluation report at the end of the `README.md` file. For this report, express your final conclusions and analysis. Support your findings by using the PNG images that you created.
+### Conclusion
 
----
+The Simple Moving Average apprach was the worse performing approach. The other models which used that as its signal didn't particularly continue using it in its predictions.  The for the most part both the logistic regression and SVM model outperformed the actual returns.  The main different is that the SVM approach went up during the initial covid global shutdown whereas the other approaches went down.  This gives the SVM an edge over the hold positions (Actual Returns) and the SVM approach.
 
-## Submission
-
-* Use the started code provided to create the machine learning trading bot and host the notebook and the required files.
-
-* Include a `README.md` file with your conclusions as requested.
-
-* Submit the link to your GitHub project to Bootcamp Spot.
-
----
-
-© 2022 edX Boot Camps LLC. Confidential and Proprietary. All Rights Reserved.
